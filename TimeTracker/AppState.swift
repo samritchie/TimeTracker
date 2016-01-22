@@ -10,7 +10,7 @@ import Foundation
 import RealmSwift
 
 struct AppState {
-    let projects: [Project]
+    let projects: Results<Project>
 }
 
 protocol StoreSubscriber: AnyObject {
@@ -24,32 +24,35 @@ class Store {
     
     init() {
         subscribers = NSHashTable.weakObjectsHashTable()
-        notificationToken = realm.addNotificationBlock { notification, realm in
+        notificationToken = realm.addNotificationBlock { [weak self] (notification, realm) in
             if notification == .RefreshRequired { realm.refresh() }
-            let projects = Array(realm.objects(Project.self))
-            for sub in self.subscribers.allObjects {
-                (sub as? StoreSubscriber)?.stateDidUpdate(AppState(projects: projects))
+            for sub in self?.subscribers.allObjects ?? [] {
+                (sub as? StoreSubscriber)?.stateDidUpdate(AppState(projects: realm.objects(Project.self)))
             }
         }
     }
     
     func subscribe(sub: StoreSubscriber) {
         subscribers.addObject(sub)
-        sub.stateDidUpdate(AppState(projects: Array(realm.objects(Project.self))))
+        sub.stateDidUpdate(AppState(projects: realm.objects(Project.self)))
     }
     
     func dispatch(action: Action) {
-        try! realm.write {
-            switch action {
-            case let .AddProject(name):
-                addProject(name)
-            case let .DeleteProject(id):
-                deleteProject(id)
-            case let .StartActivity(id, start):
-                startActivity(id, start: start)
-            case let .EndActivity(id, end):
-                endActivity(id, end: end)
+        do {
+            try realm.write {
+                switch action {
+                case let .AddProject(name):
+                    addProject(name)
+                case let .DeleteProject(id):
+                    deleteProject(id)
+                case let .StartActivity(id, start):
+                    startActivity(id, start: start)
+                case let .EndActivity(id, end):
+                    endActivity(id, end: end)
+                }
             }
+        } catch {
+            print("Realm update failed: \(error)")
         }
     }
     
@@ -60,25 +63,25 @@ class Store {
     }
     
     private func deleteProject(id: String) {
-        if let project = realm.objectForPrimaryKey(Project.self, key: id) {
-            realm.delete(project.activities)
-            realm.delete(project)
-        }
+        guard let project = realm.objectForPrimaryKey(Project.self, key: id) else { return }
+        
+        realm.delete(project.activities)
+        realm.delete(project)
     }
     
     private func startActivity(id: String, start: NSDate) {
-        if let project = realm.objectForPrimaryKey(Project.self, key: id) {
-            let act = Activity()
-            act.startDate = start
-            project.activities.append(act)
-        }
+        guard let project = realm.objectForPrimaryKey(Project.self, key: id) else { return }
+        
+        let act = Activity()
+        act.startDate = start
+        project.activities.append(act)
     }
     
     private func endActivity(id: String, end: NSDate) {
-        if let project = realm.objectForPrimaryKey(Project.self, key: id),
-            let act = project.currentActivity {
-            act.endDate = end
-        }
+        guard let project = realm.objectForPrimaryKey(Project.self, key: id) else { return }
+        guard let activity = project.currentActivity else { return }
+        
+        activity.endDate = end
     }
 
 }

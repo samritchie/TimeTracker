@@ -20,7 +20,7 @@ class ViewController: UITableViewController, StoreSubscriber {
     }
 
     func stateDidUpdate(state: AppState) {
-        self.projects = state.projects
+        self.projects = Array(state.projects)
         tableView.tableHeaderView?.frame = CGRectZero
         tableView.tableHeaderView?.hidden = true
         tableView.tableHeaderView = tableView.tableHeaderView
