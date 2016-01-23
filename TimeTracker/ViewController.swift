@@ -20,22 +20,27 @@ class ViewController: UITableViewController, StoreSubscriber {
     }
 
     func stateDidUpdate(state: AppState) {
-        self.projects = Array(state.projects)
+        projects = Array(state.projects)
+        tableView.reloadData()
+        hideNewProjectView()
+    }
+
+    @IBAction func showNewProjectView() {
+        tableView.tableHeaderView?.frame = CGRect(origin: CGPointZero, size: CGSize(width: view.frame.size.width, height: 44))
+        tableView.tableHeaderView?.hidden = false
+        tableView.tableHeaderView = tableView.tableHeaderView // tableHeaderView needs to be reassigned to recognize new height
+    }
+    
+    func hideNewProjectView() {
         tableView.tableHeaderView?.frame = CGRectZero
         tableView.tableHeaderView?.hidden = true
         tableView.tableHeaderView = tableView.tableHeaderView
         newProjectTextField.text = nil
-        self.tableView.reloadData()
-    }
-
-    @IBAction func showNewItem() {
-        tableView.tableHeaderView?.frame = CGRect(origin: CGPointZero, size: CGSize(width: view.frame.size.width, height: 44))
-        tableView.tableHeaderView?.hidden = false
-        tableView.tableHeaderView = tableView.tableHeaderView
     }
     
     @IBAction func addButtonTapped() {
-        store.dispatch(.AddProject(name: newProjectTextField.text!))
+        guard let name = newProjectTextField.text else { return }
+        store.dispatch(.AddProject(name: name))
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -48,17 +53,7 @@ class ViewController: UITableViewController, StoreSubscriber {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("ProjectCell") as! ProjectCell
-        let project = projects[indexPath.row]
-        
-        cell.id = project.id
-        cell.nameLabel.text = project.name
-        if let currentActivity = project.currentActivity {
-            cell.elapsedTimeLabel.text = "⌚️"
-            cell.activityButton.setTitle("Stop", forState: .Normal)
-        } else {
-            cell.elapsedTimeLabel.text = NSDateComponentsFormatter().stringFromTimeInterval(project.elapsedTime)
-            cell.activityButton.setTitle("Start", forState: .Normal)
-        }
+        cell.project = projects[indexPath.row]
         return cell
     }
     
@@ -73,16 +68,30 @@ class ViewController: UITableViewController, StoreSubscriber {
 
 
 class ProjectCell: UITableViewCell {
-    var id: String!
     @IBOutlet var nameLabel: UILabel!
     @IBOutlet var elapsedTimeLabel: UILabel!
     @IBOutlet var activityButton: UIButton!
     
-    @IBAction func activityButtonTapped(sender: UIButton) {
-        if sender.titleLabel?.text == "Start" {
-            store.dispatch(.StartActivity(projectId: id, startDate: NSDate()))
+    var project: Project? {
+        didSet {
+            guard let project = project else { return }
+            nameLabel.text = project.name
+            if project.currentActivity != nil {
+                elapsedTimeLabel.text = "⌚️"
+                activityButton.setTitle("Stop", forState: .Normal)
+            } else {
+                elapsedTimeLabel.text = NSDateComponentsFormatter().stringFromTimeInterval(project.elapsedTime)
+                activityButton.setTitle("Start", forState: .Normal)
+            }
+        }
+    }
+    
+    @IBAction func activityButtonTapped() {
+        guard let project = project else { return }
+        if project.currentActivity == nil {
+            store.dispatch(.StartActivity(projectId: project.id, startDate: NSDate()))
         } else {
-            store.dispatch(.EndActivity(projectId: id, endDate: NSDate()))
+            store.dispatch(.EndActivity(projectId: project.id, endDate: NSDate()))
         }
     }
 }
