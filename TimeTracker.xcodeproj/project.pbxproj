@@ -18,7 +18,6 @@
 		229D2DBA1C4E0A5400CB035A /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229D2DB51C4E0A3F00CB035A /* RealmSwift.framework */; };
 		229D2DBB1C4E0A5400CB035A /* RealmSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229D2DB51C4E0A3F00CB035A /* RealmSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		229D2DBE1C4E0AAB00CB035A /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229D2DBD1C4E0AAB00CB035A /* Models.swift */; };
-		229D2DC01C4E0D0F00CB035A /* Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229D2DBF1C4E0D0F00CB035A /* Actions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,7 +47,6 @@
 		229D2DB41C4E0A3F00CB035A /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		229D2DB51C4E0A3F00CB035A /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
 		229D2DBD1C4E0AAB00CB035A /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
-		229D2DBF1C4E0D0F00CB035A /* Actions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Actions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,7 +85,6 @@
 				229D2D9F1C4DF25000CB035A /* AppDelegate.swift */,
 				229D2DB11C4E08D400CB035A /* AppState.swift */,
 				229D2DBD1C4E0AAB00CB035A /* Models.swift */,
-				229D2DBF1C4E0D0F00CB035A /* Actions.swift */,
 				229D2DA11C4DF25000CB035A /* ViewController.swift */,
 				229D2DA31C4DF25000CB035A /* Main.storyboard */,
 				229D2DA61C4DF25000CB035A /* Assets.xcassets */,
@@ -179,7 +176,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				229D2DC01C4E0D0F00CB035A /* Actions.swift in Sources */,
 				229D2DB21C4E08D400CB035A /* AppState.swift in Sources */,
 				229D2DA21C4DF25000CB035A /* ViewController.swift in Sources */,
 				229D2DA01C4DF25000CB035A /* AppDelegate.swift in Sources */,
@@ -339,6 +335,7 @@
 				229D2DB01C4DF25000CB035A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

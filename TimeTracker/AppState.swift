@@ -9,86 +9,65 @@
 import Foundation
 import RealmSwift
 
-struct AppState {
-    let projects: Results<Project>
-}
+extension Realm {
 
-protocol StoreSubscriber: AnyObject {
-    func stateDidUpdate(state: AppState)
-}
-
-class Store {
-    private let realm = try! Realm()
-    private var notificationToken: NotificationToken? = nil
-    private var subscribers: NSHashTable
-    
-    var currentState: AppState {
-        return AppState(projects: realm.objects(Project.self))
+    var projects: Results<Project> {
+        return objects(Project.self)
     }
     
-    init() {
-        subscribers = NSHashTable.weakObjectsHashTable()
-        notificationToken = realm.addNotificationBlock { [weak self] (notification, realm) in
-            guard let store = self else { return }
-            if notification == .RefreshRequired { realm.refresh() }
-            for sub in store.subscribers.allObjects {
-                (sub as? StoreSubscriber)?.stateDidUpdate(store.currentState)
-            }
-        }
-    }
-    
-    func subscribe(sub: StoreSubscriber) {
-        subscribers.addObject(sub)
-        sub.stateDidUpdate(currentState)
-    }
-    
-    func dispatch(action: Action) {
+    // MARK: Actions
+    func addProject(name: String) {
         do {
-            try realm.write {
-                switch action {
-                case let .AddProject(name):
-                    addProject(name)
-                case let .DeleteProject(id):
-                    deleteProject(id)
-                case let .StartActivity(id, start):
-                    startActivity(id, start: start)
-                case let .EndActivity(id, end):
-                    endActivity(id, end: end)
-                }
+            try write {
+                let project = Project()
+                project.name = name
+                add(project)
             }
         } catch {
-            print("Realm update failed: \(error)")
+            print("Add Project action failed: \(error)")
+        }
+   }
+    
+    func deleteProject(id: String) {
+        guard let project = objectForPrimaryKey(Project.self, key: id) else { return }
+        
+        do {
+            try write {
+                delete(project.activities)
+                delete(project)
+            }
+        } catch {
+            print("Delete Project action failed: \(error)")
         }
     }
     
-    private func addProject(name: String) {
-        let project = Project()
-        project.name = name
-        realm.add(project)
-    }
-    
-    private func deleteProject(id: String) {
-        guard let project = realm.objectForPrimaryKey(Project.self, key: id) else { return }
+    func startActivity(projectId: String, startDate: NSDate) {
+        guard let project = objectForPrimaryKey(Project.self, key: projectId) else { return }
         
-        realm.delete(project.activities)
-        realm.delete(project)
+        do {
+            try write {
+                let act = Activity()
+                act.startDate = startDate
+                project.activities.append(act)
+            }
+        } catch {
+            print("Start Activity action failed: \(error)")
+        }
     }
     
-    private func startActivity(id: String, start: NSDate) {
-        guard let project = realm.objectForPrimaryKey(Project.self, key: id) else { return }
-        
-        let act = Activity()
-        act.startDate = start
-        project.activities.append(act)
-    }
-    
-    private func endActivity(id: String, end: NSDate) {
-        guard let project = realm.objectForPrimaryKey(Project.self, key: id) else { return }
+    func endActivity(projectId: String, endDate: NSDate) {
+        guard let project = objectForPrimaryKey(Project.self, key: projectId) else { return }
         guard let activity = project.currentActivity else { return }
         
-        activity.endDate = end
-    }
+        do {
+            try write {
+                activity.endDate = endDate
+            }
+        } catch {
+            print("End Activity action failed: \(error)")
+        }
+     }
 
 }
 
-let store = Store()
+let store = try! Realm()

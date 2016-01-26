@@ -7,20 +7,25 @@
 //
 
 import UIKit
+import RealmSwift
 
-class ViewController: UITableViewController, StoreSubscriber {
+class ViewController: UITableViewController {
 
-    var projects = [Project]()
+    var projects: Results<Project>!
+    var notificationToken: NotificationToken?
     @IBOutlet var newProjectTextField: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        store.subscribe(self)
+        projects = store.projects
+        updateView()
+        notificationToken = store.addNotificationBlock { [weak self] (_) in
+            self?.updateView()
+        }
     }
 
-    func stateDidUpdate(state: AppState) {
-        projects = Array(state.projects)
+    func updateView() {
         tableView.reloadData()
         hideNewProjectView()
     }
@@ -32,7 +37,7 @@ class ViewController: UITableViewController, StoreSubscriber {
     }
     
     func hideNewProjectView() {
-        tableView.tableHeaderView?.frame = CGRectZero
+        tableView.tableHeaderView?.frame = CGRect(origin: CGPointZero, size: CGSize(width: view.frame.size.width, height: 0))
         tableView.tableHeaderView?.hidden = true
         tableView.tableHeaderView = tableView.tableHeaderView
         newProjectTextField.text = nil
@@ -40,7 +45,7 @@ class ViewController: UITableViewController, StoreSubscriber {
     
     @IBAction func addButtonTapped() {
         guard let name = newProjectTextField.text else { return }
-        store.dispatch(.AddProject(name: name))
+        store.addProject(name)
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -62,7 +67,7 @@ class ViewController: UITableViewController, StoreSubscriber {
     }
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        store.dispatch(.DeleteProject(id: projects[indexPath.row].id))
+        store.deleteProject(projects[indexPath.row].id)
     }
 }
 
@@ -89,9 +94,9 @@ class ProjectCell: UITableViewCell {
     @IBAction func activityButtonTapped() {
         guard let project = project else { return }
         if project.currentActivity == nil {
-            store.dispatch(.StartActivity(projectId: project.id, startDate: NSDate()))
+            store.startActivity(project.id, startDate: NSDate())
         } else {
-            store.dispatch(.EndActivity(projectId: project.id, endDate: NSDate()))
+            store.endActivity(project.id, endDate: NSDate())
         }
     }
 }

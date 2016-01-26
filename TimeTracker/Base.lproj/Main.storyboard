@@ -25,7 +25,15 @@
                                 </textField>
                                 <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JRT-iQ-MYj">
                                     <rect key="frame" x="562" y="7" width="30" height="30"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="30" id="Ubo-CB-B3a"/>
+                                    </constraints>
                                     <state key="normal" title="Add"/>
+                                    <variation key="default">
+                                        <mask key="constraints">
+                                            <exclude reference="Ubo-CB-B3a"/>
+                                        </mask>
+                                    </variation>
                                     <connections>
                                         <action selector="addButtonTapped" destination="B2e-bh-F05" eventType="touchUpInside" id="k8l-uI-9t0"/>
                                     </connections>
@@ -61,7 +69,7 @@
                                             </constraints>
                                             <state key="normal" title="Start"/>
                                             <connections>
-                                                <action selector="activityButtonTapped:" destination="hi8-y0-drJ" eventType="touchUpInside" id="up1-vd-72P"/>
+                                                <action selector="activityButtonTapped" destination="hi8-y0-drJ" eventType="touchUpInside" id="2Tw-Jq-KFO"/>
                                             </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0:01" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qzp-3e-z5X">
