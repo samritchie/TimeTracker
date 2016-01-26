@@ -11,14 +11,13 @@ import RealmSwift
 
 class ViewController: UITableViewController {
 
-    var projects: Results<Project>!
+    let projects = store.projects
     var notificationToken: NotificationToken?
     @IBOutlet var newProjectTextField: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        projects = store.projects
         updateView()
         notificationToken = store.addNotificationBlock { [weak self] (_) in
             self?.updateView()
@@ -67,7 +66,7 @@ class ViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        store.deleteProject(projects[indexPath.row].id)
+        store.deleteProject(projects[indexPath.row])
     }
 }
 
@@ -94,9 +93,9 @@ class ProjectCell: UITableViewCell {
     @IBAction func activityButtonTapped() {
         guard let project = project else { return }
         if project.currentActivity == nil {
-            store.startActivity(project.id, startDate: NSDate())
+            store.startActivity(project, startDate: NSDate())
         } else {
-            store.endActivity(project.id, endDate: NSDate())
+            store.endActivity(project, endDate: NSDate())
         }
     }
 }

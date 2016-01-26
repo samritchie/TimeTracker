@@ -6,11 +6,9 @@ The app uses Realm for state storage, and only attempts to show a unidirectional
 
 ## Core Components
 
-1. `Store`: This is a wrapper around the realm instance, manages state updates & change notifications. A global instance is declared with the name `store`.
-2. `StoreSubscriber`: A protocol enabling subscription to state changes.
-3. `Action`: An enum with a case for each state change action that can be performed on the store
-4. `Project` & `Activity`: The models, Realm Object subclasses.
-5. `ViewController`: A UITableViewController that handles displaying and editing the projects items.
+1. `Store`: We’re using the Realm as the Store component, with extension methods representing the actions, and computed properties representing the State. A global instance is declared with the name `store`.
+2. `Project` & `Activity`: The models, Realm Object subclasses.
+3. `ViewController`: A `UITableViewController` that handles displaying and editing the projects items.
 
 ## Smells/alternatives/stuff not done that maybe should be
 
