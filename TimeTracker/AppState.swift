@@ -22,19 +22,24 @@ class Store {
     private var notificationToken: NotificationToken? = nil
     private var subscribers: NSHashTable
     
+    var currentState: AppState {
+        return AppState(projects: realm.objects(Project.self))
+    }
+    
     init() {
         subscribers = NSHashTable.weakObjectsHashTable()
         notificationToken = realm.addNotificationBlock { [weak self] (notification, realm) in
+            guard let store = self else { return }
             if notification == .RefreshRequired { realm.refresh() }
-            for sub in self?.subscribers.allObjects ?? [] {
-                (sub as? StoreSubscriber)?.stateDidUpdate(AppState(projects: realm.objects(Project.self)))
+            for sub in store.subscribers.allObjects {
+                (sub as? StoreSubscriber)?.stateDidUpdate(store.currentState)
             }
         }
     }
     
     func subscribe(sub: StoreSubscriber) {
         subscribers.addObject(sub)
-        sub.stateDidUpdate(AppState(projects: realm.objects(Project.self)))
+        sub.stateDidUpdate(currentState)
     }
     
     func dispatch(action: Action) {

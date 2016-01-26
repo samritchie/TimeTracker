@@ -25,7 +25,7 @@ class ViewController: UITableViewController, StoreSubscriber {
         hideNewProjectView()
     }
 
-    @IBAction func showNewProjectView() {
+    @IBAction func showNewProjectView(sender: AnyObject) {
         tableView.tableHeaderView?.frame = CGRect(origin: CGPointZero, size: CGSize(width: view.frame.size.width, height: 44))
         tableView.tableHeaderView?.hidden = false
         tableView.tableHeaderView = tableView.tableHeaderView // tableHeaderView needs to be reassigned to recognize new height

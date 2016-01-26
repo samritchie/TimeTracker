@@ -97,7 +97,7 @@
                     <navigationItem key="navigationItem" id="xQJ-Y1-a7i">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="Dfe-J0-Pz2">
                             <connections>
-                                <action selector="showNewProjectView" destination="B2e-bh-F05" id="Zdf-ph-QQ4"/>
+                                <action selector="showNewProjectView:" destination="B2e-bh-F05" id="5V9-wM-EHj"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
