@@ -6,7 +6,7 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Time Tracker-->
         <scene sceneID="GbR-i9-wug">
             <objects>
                 <tableViewController id="B2e-bh-F05" customClass="ViewController" customModule="TimeTracker" customModuleProvider="target" sceneMemberID="viewController">
@@ -102,7 +102,7 @@
                         </connections>
                     </tableView>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" id="xQJ-Y1-a7i">
+                    <navigationItem key="navigationItem" title="Time Tracker" id="xQJ-Y1-a7i">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="Dfe-J0-Pz2">
                             <connections>
                                 <action selector="showNewProjectView:" destination="B2e-bh-F05" id="5V9-wM-EHj"/>
