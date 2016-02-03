@@ -10,11 +10,8 @@ import Foundation
 import RealmSwift
 
 class Project: Object {
-    dynamic var id: String = NSUUID().UUIDString
     dynamic var name: String = ""
     let activities = List<Activity>()
-    
-    override class func primaryKey() -> String { return "id" }
 }
 
 class Activity: Object {
