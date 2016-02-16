@@ -19,7 +19,7 @@ class ViewController: UITableViewController {
         super.viewDidLoad()
         
         updateView()
-        notificationToken = store.addNotificationBlock { [weak self] (_) in
+        notificationToken = projects.addNotificationBlock { [weak self] (_) in
             self?.updateView()
         }
     }
@@ -46,7 +46,9 @@ class ViewController: UITableViewController {
     
     @IBAction func addButtonTapped() {
         guard let name = newProjectTextField.text else { return }
-        store.addProject(name)
+        try! projects.realm!.write {
+            projects.addProject(name)
+        }
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -68,7 +70,10 @@ class ViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        store.deleteProject(projects[indexPath.row])
+        let project = projects[indexPath.row]
+        try! project.realm!.write {
+            project.deleteProject()
+        }
     }
 }
 
@@ -94,10 +99,13 @@ class ProjectCell: UITableViewCell {
     
     @IBAction func activityButtonTapped() {
         guard let project = project else { return }
-        if project.currentActivity == nil {
-            store.startActivity(project, startDate: NSDate())
-        } else {
-            store.endActivity(project, endDate: NSDate())
+
+        try! project.realm!.write {
+            if let currentActivity = project.currentActivity {
+                currentActivity.endDate = NSDate()
+            } else {
+                project.startActivity(NSDate())
+            }
         }
     }
 }
