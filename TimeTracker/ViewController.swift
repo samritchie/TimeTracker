@@ -29,16 +29,16 @@ class ViewController: UITableViewController {
         hideNewProjectView()
     }
 
-    @IBAction func showNewProjectView(sender: AnyObject) {
-        tableView.tableHeaderView?.frame = CGRect(origin: CGPointZero, size: CGSize(width: view.frame.size.width, height: 44))
-        tableView.tableHeaderView?.hidden = false
+    @IBAction func showNewProjectView(_ sender: AnyObject) {
+        tableView.tableHeaderView?.frame = CGRect(origin: CGPoint.zero, size: CGSize(width: view.frame.size.width, height: 44))
+        tableView.tableHeaderView?.isHidden = false
         tableView.tableHeaderView = tableView.tableHeaderView // tableHeaderView needs to be reassigned to recognize new height
         newProjectTextField.becomeFirstResponder()
     }
     
     func hideNewProjectView() {
-        tableView.tableHeaderView?.frame = CGRect(origin: CGPointZero, size: CGSize(width: view.frame.size.width, height: 0))
-        tableView.tableHeaderView?.hidden = true
+        tableView.tableHeaderView?.frame = CGRect(origin: CGPoint.zero, size: CGSize(width: view.frame.size.width, height: 0))
+        tableView.tableHeaderView?.isHidden = true
         tableView.tableHeaderView = tableView.tableHeaderView
         newProjectTextField.endEditing(true)
         newProjectTextField.text = nil
@@ -49,25 +49,25 @@ class ViewController: UITableViewController {
         store.addProject(name)
     }
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return projects.count
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("ProjectCell") as! ProjectCell
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ProjectCell") as! ProjectCell
         cell.project = projects[indexPath.row]
         return cell
     }
     
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
 
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         store.deleteProject(projects[indexPath.row])
     }
 }
@@ -84,10 +84,10 @@ class ProjectCell: UITableViewCell {
             nameLabel.text = project.name
             if project.currentActivity != nil {
                 elapsedTimeLabel.text = "⌚️"
-                activityButton.setTitle("Stop", forState: .Normal)
+                activityButton.setTitle("Stop", for: UIControlState())
             } else {
-                elapsedTimeLabel.text = NSDateComponentsFormatter().stringFromTimeInterval(project.elapsedTime)
-                activityButton.setTitle("Start", forState: .Normal)
+                elapsedTimeLabel.text = DateComponentsFormatter().string(from: project.elapsedTime)
+                activityButton.setTitle("Start", for: UIControlState())
             }
         }
     }
@@ -95,9 +95,9 @@ class ProjectCell: UITableViewCell {
     @IBAction func activityButtonTapped() {
         guard let project = project else { return }
         if project.currentActivity == nil {
-            store.startActivity(project, startDate: NSDate())
+            store.startActivity(project, startDate: Date() as NSDate)
         } else {
-            store.endActivity(project, endDate: NSDate())
+            store.endActivity(project, endDate: Date() as NSDate)
         }
     }
 }
