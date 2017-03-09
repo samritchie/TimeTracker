@@ -15,16 +15,16 @@ class Project: Object {
 }
 
 class Activity: Object {
-    dynamic var startDate: NSDate?
-    dynamic var endDate: NSDate?
+    dynamic var startDate: Date?
+    dynamic var endDate: Date?
 }
 
 extension Project {
-    var elapsedTime: NSTimeInterval {
+    var elapsedTime: TimeInterval {
         return activities.reduce(0) { time, activity in
             guard let start = activity.startDate,
                 let end = activity.endDate else { return time }
-            return time + end.timeIntervalSinceDate(start)
+            return time + end.timeIntervalSince(start)
         }
     }
     
@@ -42,7 +42,7 @@ extension Realm {
 
 // MARK: Actions
 extension Realm {
-    func addProject(name: String) {
+    func addProject(_ name: String) {
         do {
             try write {
                 let project = Project()
@@ -54,7 +54,7 @@ extension Realm {
         }
    }
     
-    func deleteProject(project: Project) {
+    func deleteProject(_ project: Project) {
         do {
             try write {
                 delete(project.activities)
@@ -65,11 +65,11 @@ extension Realm {
         }
     }
     
-    func startActivity(project: Project, startDate: NSDate) {
+    func startActivity(_ project: Project, startDate: NSDate) {
         do {
             try write {
                 let act = Activity()
-                act.startDate = startDate
+                act.startDate = startDate as Date
                 project.activities.append(act)
             }
         } catch {
@@ -77,12 +77,12 @@ extension Realm {
         }
     }
     
-    func endActivity(project: Project, endDate: NSDate) {
+    func endActivity(_ project: Project, endDate: NSDate) {
         guard let activity = project.currentActivity else { return }
         
         do {
             try write {
-                activity.endDate = endDate
+                activity.endDate = endDate as Date
             }
         } catch {
             print("End Activity action failed: \(error)")
